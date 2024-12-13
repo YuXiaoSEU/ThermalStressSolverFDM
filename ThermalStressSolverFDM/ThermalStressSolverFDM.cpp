@@ -1,0 +1,32 @@
+﻿#include "TwoDimensionThermalElasticStress.h"
+
+int main()
+{
+    TwoDimensionThermalElasticStress mystress;
+
+    mystress.read_parameters();
+    mystress.initialize_domain();
+	mystress.create_workspace_directory();
+	printf("\n============================ Simulation begins ================================\n");
+	int loops = 0, frame = 0;
+	int max_loops = mystress.get_max_loops();
+	int max_frames = mystress.get_max_frames();
+
+	mystress.write_plt_file(loops);
+	while (loops < max_loops)
+	{
+		loops++;
+		mystress.temperature_evolution();
+		mystress.temperature_boundary();
+		mystress.temperature_update();
+		if (loops % (max_loops / max_frames) == 0)
+		{
+			frame = loops / (max_loops / max_frames);
+			mystress.check_variables(loops, frame);
+			mystress.write_plt_file(loops);
+		}
+	}
+	printf("=============================== Simulation ends ===============================\n");
+	std::cin.get();
+	exit(0);
+}
