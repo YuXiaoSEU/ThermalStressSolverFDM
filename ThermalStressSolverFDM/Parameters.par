@@ -4,7 +4,7 @@
 0.0005                                        !line 03: Lx (Space step)
 0.00001                                       !line 04: dt (Time step)
 Part2: The maximum running loops and frames
-1000000                                       !line 01: max_loops (The maximum running loops)
+20000000                                      !line 01: max_loops (The maximum running loops)
 100                                           !line 02: max_frames (The number of output frames)
 Part3: Temperature field settings
 273                                           !line 01: T_ini (Initial temperature)

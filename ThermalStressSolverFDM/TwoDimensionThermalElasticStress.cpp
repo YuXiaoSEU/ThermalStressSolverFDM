@@ -245,6 +245,110 @@ void TwoDimensionThermalElasticStress::temperature_update()
 	}
 }
 
+void TwoDimensionThermalElasticStress::displacement_evolution()
+{
+#pragma omp parallel for
+	for (int i = 1; i < _Mx - 1; i++)
+	{
+		for (int j = 1; j < _My - 1; j++)
+		{
+			int index    = _My * i + j;
+			int index_w  = _My * (i - 1) + j;
+			int index_e  = _My * (i + 1) + j;
+			int index_n  = _My * i + j + 1;
+			int index_s  = _My * i + j - 1;
+			int index_ne = _My * (i + 1) + j + 1;
+			int index_nw = _My * (i - 1) + j + 1;
+			int index_se = _My * (i + 1) + j - 1;
+			int index_sw = _My * (i - 1) + j - 1;
+
+			u_new[index] = ((u_old[index_e] + u_old[index_w]) + (1 - mu) * 0.5 * (u_old[index_n] + u_old[index_s]) +
+							(1 + mu) * 0.5 / 4 * (v_old[index_ne] + v_old[index_sw] - v_old[index_nw] - v_old[index_se])
+							- alpha * (1 + mu) * (T_old[index_e] - T_old[index_w]) * 0.5 * delta_x) / (3 - mu);
+
+			v_new[index] = ((v_old[index_n] + v_old[index_s]) + (1 - mu) * 0.5 * (v_old[index_e] + v_old[index_w]) +
+							(1 + mu) * 0.5 / 4 * (u_old[index_ne] + u_old[index_sw] - u_old[index_nw] - u_old[index_se])
+							- alpha * (1 + mu) * (T_old[index_n] - T_old[index_s]) * 0.5 * delta_x) / (3 - mu);
+		}
+	}
+}
+
+void TwoDimensionThermalElasticStress::displacement_boundary()
+{
+#pragma omp parallel for schedule(dynamic)
+	for (int i = 0; i < _Mx; i++)
+	{
+		for (int j = 0; j < _My; j++)
+		{
+			int index    = _My * i + j;
+			int index_w  = _My * (i - 1) + j;
+			int index_e  = _My * (i + 1) + j;
+			int index_n  = _My * i + j + 1;
+			int index_s  = _My * i + j - 1;
+			int index_ne = _My * (i + 1) + j + 1;
+			int index_nw = _My * (i - 1) + j + 1;
+			int index_se = _My * (i + 1) + j - 1;
+			int index_sw = _My * (i - 1) + j - 1;
+
+			if (j == 0 && i > 0 && i < _Mx - 1)
+			{
+				u_new[index] = u_old[index_n] + 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_n] + 0.5 * mu * (u_old[index_e] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (j == 0 && i == 0)
+			{
+				//u_new[index] = u_old[index_n] + v_old[index_e] - v_old[index];
+				//v_new[index] = v_old[index_n] + mu * (u_old[index_e] - u_old[index]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (j == 0 && i == _Mx - 1)
+			{
+				u_new[index] = u_old[index_n] + v_old[index] - v_old[index_w];
+				v_new[index] = v_old[index_n] + mu * (u_old[index] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (j == _My - 1 && i > 0 && i < _Mx - 1)
+			{
+				u_new[index] = u_old[index_s] - 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_s] - 0.5 * mu * (u_old[index_e] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (j == _My - 1 && i == 0)
+			{
+				//u_new[index] = u_old[index_s] - (v_old[index_e] - v_old[index]);
+				v_new[index] = v_old[index_s] - mu * (u_old[index_e] - u_old[index]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (j == _My - 1 && i == _Mx - 1)
+			{
+				u_new[index] = u_old[index_s] - (v_old[index] - v_old[index_w]);
+				v_new[index] = v_old[index_s] - mu * (u_old[index] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			else if (i == _Mx - 1 && j > 0 && j < _My - 1)
+			{
+				u_new[index] = u_old[index_w] - 0.5 * mu * (v_old[index_n] - v_old[index_s]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+				v_new[index] = v_old[index_w] - 0.5 * (u_old[index_n] - u_old[index_s]);
+
+			}
+			else if (i == 0)
+			{
+				u_new[index] = 1e-18;
+				v_new[index] = 1e-18;
+			}
+		}
+	}
+}
+
+void TwoDimensionThermalElasticStress::displacement_upadate()
+{
+#pragma omp parallel for
+	for (int i = 0; i < _Mx; i++)
+	{
+		for (int j = 0; j < _My; j++)
+		{
+			int index = _My * i + j;
+			u_old[index] = u_new[index];
+			v_old[index] = v_new[index];
+		}
+	}
+}
+
 void TwoDimensionThermalElasticStress::check_variables(int loops, int frame)
 {
 	std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(10) << "*** frame = " << frame << "\t\t";

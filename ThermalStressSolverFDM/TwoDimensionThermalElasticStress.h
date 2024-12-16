@@ -49,6 +49,10 @@ public:
 	void temperature_boundary();
 	void temperature_update();
 
+	void displacement_evolution();
+	void displacement_boundary();
+	void displacement_upadate();
+
 	void check_variables(int loops, int frame);
 
 	void create_workspace_directory();
