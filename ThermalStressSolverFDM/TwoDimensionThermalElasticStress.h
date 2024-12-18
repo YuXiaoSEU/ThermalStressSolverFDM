@@ -4,10 +4,10 @@
 // Author      : Pengxiao Wu                                           //
 // Copyright   : All rights reserved.                                  //
 // Description : C++, Ansi-style                                       //
-// Last updated: 2024.12.11 by Pengxiao Wu                             //
+// Last updated: 2024.12.18 by Pengxiao Wu                             //
 //=====================================================================//
 
-#include<string>
+#include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,10 +33,6 @@ protected:
 	double* u_new, * u_old, * v_new, * v_old, * T_new, * T_old, * T_0;
 	double* sigma_x, * sigma_y, * tau_xy, * von_mises;
 
-public:
-	TwoDimensionThermalElasticStress();
-	~TwoDimensionThermalElasticStress();
-
 protected:
 	void malloc_arrays();
 	void delete_arrays();
@@ -52,6 +48,7 @@ public:
 	void displacement_evolution();
 	void displacement_boundary();
 	void displacement_upadate();
+	void compute_stress();
 
 	void check_variables(int loops, int frame);
 
@@ -60,4 +57,8 @@ public:
 
 	int get_max_loops();
 	int get_max_frames();
+
+public:
+	TwoDimensionThermalElasticStress();
+	~TwoDimensionThermalElasticStress();
 };

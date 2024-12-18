@@ -2,16 +2,17 @@
 
 int main()
 {
-    TwoDimensionThermalElasticStress mystress;
+	TwoDimensionThermalElasticStress mystress;
 
-    mystress.read_parameters();
-    mystress.initialize_domain();
+	mystress.read_parameters();
+	mystress.initialize_domain();
 	mystress.create_workspace_directory();
-	printf("\n============================ Simulation begins ================================\n");
+
 	int loops = 0, frame = 0;
 	int max_loops = mystress.get_max_loops();
 	int max_frames = mystress.get_max_frames();
 
+	printf("\n============================ Simulation begins ================================\n");
 	mystress.write_plt_file(loops);
 	while (loops < max_loops)
 	{

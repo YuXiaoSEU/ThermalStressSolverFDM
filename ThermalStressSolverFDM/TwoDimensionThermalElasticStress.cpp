@@ -8,15 +8,6 @@
 //=============================================================//
 #include "TwoDimensionThermalElasticStress.h"
 
-TwoDimensionThermalElasticStress::TwoDimensionThermalElasticStress()
-{
-}
-
-TwoDimensionThermalElasticStress::~TwoDimensionThermalElasticStress()
-{
-	delete_arrays();
-}
-   
 void TwoDimensionThermalElasticStress::malloc_arrays()
 {
 	int size = _Mx * _My;
@@ -62,10 +53,10 @@ void TwoDimensionThermalElasticStress::read_parameters()
 
 	if (infile.fail())
 	{
-		std::cout << "The file Parameters.par does NOT exist!" << std::endl;
+		std::cout << "The file Parameters.par does not exist!" << std::endl;
 		exit(0);
 	}
-	printf("=================== Paramters read from file Parameters.par ===================\n");
+	printf("================== Parameters read from file Parameters.par ===================\n");
 
 	// Mesh parameters, delta x, delta t
 	getline(infile, line);
@@ -73,22 +64,22 @@ void TwoDimensionThermalElasticStress::read_parameters()
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> _Mx;
-	printf("%32s = %-16d \n", "_Mx", _Mx);
+	printf("%40s = %-16d \n", "_Mx", _Mx);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> _My;
-	printf("%32s = %-16d \n", "_My", _My);
+	printf("%40s = %-16d \n", "_My", _My);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> delta_x;
-	printf("%32s = %-16f \n", "delta_x", delta_x);
+	printf("%40s = %-16.8f \n", "delta_x", delta_x);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> delta_t;
-	printf("%32s = %-16f \n", "delta_t", delta_t);
+	printf("%40s = %-16.8f \n", "delta_t", delta_t);
 
 	// Output settings
 	getline(infile, line);
@@ -96,12 +87,12 @@ void TwoDimensionThermalElasticStress::read_parameters()
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> max_loops;
-	printf("%32s = %-16d \n", "maximum loops", max_loops);
+	printf("%40s = %-16d \n", "maximum loops", max_loops);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> max_frames;
-	printf("%32s = %-16d \n", "maximum frames", max_frames);
+	printf("%40s = %-16d \n", "maximum frames", max_frames);
 
 	printf("-------------------------------------------------------------------------------\n");
 	// Temperature field settings
@@ -110,22 +101,22 @@ void TwoDimensionThermalElasticStress::read_parameters()
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> T_ini;
-	printf("%32s = %-16f \n", "initial temperature", T_ini);
+	printf("%40s = %-16.8f \n", "initial temperature", T_ini);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> rho;
-	printf("%32s = %-16f \n", "density", rho);
+	printf("%40s = %-16.8f \n", "density", rho);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> c_p;
-	printf("%32s = %-16f \n", "specific heat", c_p);
+	printf("%40s = %-16.8f \n", "specific heat", c_p);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> lambda;
-	printf("%32s = %-16f \n", "coefficient of heat conduction", lambda);
+	printf("%40s = %-16.8f \n", "coefficient of thermal conductivity", lambda);
 
 	// Solid field settings
 	getline(infile, line);
@@ -133,19 +124,19 @@ void TwoDimensionThermalElasticStress::read_parameters()
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> E;
-	printf("%32s = %-16f \n", "modulus of elasticity", E);
+	printf("%40s = %-16e \n", "modulus of elasticity", E);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> mu;
-	printf("%32s = %-16f \n", "poisson ratio", mu);
+	printf("%40s = %-16.8f \n", "poisson ratio", mu);
 	getline(infile, line);
 	stream_temp.clear();
 	stream_temp.str(line);
 	stream_temp >> alpha;
-	printf("%32s = %-16f \n", "thermal expansivity", alpha);
+	printf("%40s = %-16.8f \n", "coefficient of linear expansion", alpha);
 
-	printf("============================= Paramters read end ==============================\n\n");
+	printf("============================ Parameters read end ==============================\n\n");
 
 	malloc_arrays();
 }
@@ -221,11 +212,11 @@ void TwoDimensionThermalElasticStress::temperature_boundary()
 			}
 			else if (j == 0)
 			{
-				T_new[index] = 253;
+				T_new[index] = 248;
 			}
 			else if (j == _My - 1)
 			{
-				T_new[index] = 293;
+				T_new[index] = 298;
 			}
 		}
 	}
@@ -275,7 +266,7 @@ void TwoDimensionThermalElasticStress::displacement_evolution()
 
 void TwoDimensionThermalElasticStress::displacement_boundary()
 {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for
 	for (int i = 0; i < _Mx; i++)
 	{
 		for (int j = 0; j < _My; j++)
@@ -313,7 +304,7 @@ void TwoDimensionThermalElasticStress::displacement_boundary()
 			else if (j == _My - 1 && i == 0)
 			{
 				//u_new[index] = u_old[index_s] - (v_old[index_e] - v_old[index]);
-				v_new[index] = v_old[index_s] - mu * (u_old[index_e] - u_old[index]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+				//v_new[index] = v_old[index_s] - mu * (u_old[index_e] - u_old[index]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
 			}
 			else if (j == _My - 1 && i == _Mx - 1)
 			{
@@ -347,6 +338,11 @@ void TwoDimensionThermalElasticStress::displacement_upadate()
 			v_old[index] = v_new[index];
 		}
 	}
+}
+
+void TwoDimensionThermalElasticStress::compute_stress()
+{
+
 }
 
 void TwoDimensionThermalElasticStress::check_variables(int loops, int frame)
@@ -395,7 +391,7 @@ void TwoDimensionThermalElasticStress::write_plt_file(int frame)
 			output_file << i << "\t" << j << "\t" << sigma_x[index] << "\t" << sigma_y[index] << "\t" << tau_xy[index] << "\t"
 				<< von_mises[index] << "\t" << u_new[index]
 				<< "\t" << v_new[index] << "\t"
-				<< "\t" << T_new[index];
+				<< T_new[index];
 			output_file << "\n";
 		}
 	}
@@ -410,4 +406,13 @@ int TwoDimensionThermalElasticStress::get_max_loops()
 int TwoDimensionThermalElasticStress::get_max_frames()
 {
 	return max_frames;
+}
+
+TwoDimensionThermalElasticStress::TwoDimensionThermalElasticStress()
+{
+}
+
+TwoDimensionThermalElasticStress::~TwoDimensionThermalElasticStress()
+{
+	delete_arrays();
 }

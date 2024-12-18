@@ -1,17 +1,17 @@
 ﻿Part 1: Mesh parameters, delta x, delta t 
-240                                           !line 01: _Mx (Number of grids in the x-direction)
-120                                           !line 02: _My (Number of grids in the y-direction)
-0.0005                                        !line 03: Lx (Space step)
-0.00001                                       !line 04: dt (Time step)
+480                                           !line 01: _Mx
+240                                           !line 02: _My
+0.00025                                       !line 03: Lx
+0.00001                                       !line 04: dt
 Part2: The maximum running loops and frames
-20000000                                      !line 01: max_loops (The maximum running loops)
-100                                           !line 02: max_frames (The number of output frames)
+50000000                                      !line 01: max_loops
+50                                            !line 02: max_frames
 Part3: Temperature field settings
-273                                           !line 01: T_ini (Initial temperature)
-2700                                          !line 02: rho (Density)
-900                                           !line 03: c_p (Specific heat)
-238                                           !line 04: lambda (Coefficient of heat conduction)
+273                                           !line 01: T_ini
+2700                                          !line 02: rho
+900                                           !line 03: c_p
+238                                           !line 04: lambda
 Part4: Solid field settings
-7e+10                                         !line 01: E (Modulus of elasticity)
-0.33                                          !line 02: mu (Poisson ratio)
-2.3e-6                                        !line 03: alpha (Thermal expansivity)
+7e+10                                         !line 01: E
+0.33                                          !line 02: mu
+2.3e-6                                        !line 03: alpha
