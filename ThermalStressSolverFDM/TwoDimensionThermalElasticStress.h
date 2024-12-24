@@ -3,7 +3,7 @@
 //=====================================================================//
 // Author      : Pengxiao Wu                                           //
 // Copyright   : All rights reserved.                                  //
-// Description : C++, Ansi-style                                       //
+// Description : C++                                                   //
 // Last updated: 2024.12.18 by Pengxiao Wu                             //
 //=====================================================================//
 

@@ -212,11 +212,11 @@ void TwoDimensionThermalElasticStress::temperature_boundary()
 			}
 			else if (j == 0)
 			{
-				T_new[index] = 248;
+				T_new[index] = 173;
 			}
 			else if (j == _My - 1)
 			{
-				T_new[index] = 298;
+				T_new[index] = 373;
 			}
 		}
 	}

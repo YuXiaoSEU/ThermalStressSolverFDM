@@ -1,7 +1,7 @@
 ﻿Part 1: Mesh parameters, delta x, delta t 
-480                                           !line 01: _Mx
-240                                           !line 02: _My
-0.00025                                       !line 03: Lx
+240                                           !line 01: _Mx
+120                                           !line 02: _My
+0.0005                                        !line 03: Lx
 0.00001                                       !line 04: dt
 Part2: The maximum running loops and frames
 50000000                                      !line 01: max_loops
