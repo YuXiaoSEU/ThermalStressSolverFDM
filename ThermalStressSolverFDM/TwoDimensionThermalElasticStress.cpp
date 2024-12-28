@@ -281,46 +281,58 @@ void TwoDimensionThermalElasticStress::displacement_boundary()
 			int index_se = _My * (i + 1) + j - 1;
 			int index_sw = _My * (i - 1) + j - 1;
 
-			if (j == 0 && i > 0 && i < _Mx - 1)
+			//left
+			if (i == 0)
 			{
-				u_new[index] = u_old[index_n] + 0.5 * (v_old[index_e] - v_old[index_w]);
-				v_new[index] = v_old[index_n] + 0.5 * mu * (u_old[index_e] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+				u_new[index] = 0.0;
+				v_new[index] = 0.0;
 			}
-			else if (j == 0 && i == 0)
-			{
-				//u_new[index] = u_old[index_n] + v_old[index_e] - v_old[index];
-				//v_new[index] = v_old[index_n] + mu * (u_old[index_e] - u_old[index]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
-			}
-			else if (j == 0 && i == _Mx - 1)
-			{
-				u_new[index] = u_old[index_n] + v_old[index] - v_old[index_w];
-				v_new[index] = v_old[index_n] + mu * (u_old[index] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
-			}
-			else if (j == _My - 1 && i > 0 && i < _Mx - 1)
-			{
-				u_new[index] = u_old[index_s] - 0.5 * (v_old[index_e] - v_old[index_w]);
-				v_new[index] = v_old[index_s] - 0.5 * mu * (u_old[index_e] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
-			}
-			else if (j == _My - 1 && i == 0)
-			{
-				//u_new[index] = u_old[index_s] - (v_old[index_e] - v_old[index]);
-				//v_new[index] = v_old[index_s] - mu * (u_old[index_e] - u_old[index]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
-			}
-			else if (j == _My - 1 && i == _Mx - 1)
-			{
-				u_new[index] = u_old[index_s] - (v_old[index] - v_old[index_w]);
-				v_new[index] = v_old[index_s] - mu * (u_old[index] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
-			}
+			//right
 			else if (i == _Mx - 1 && j > 0 && j < _My - 1)
 			{
 				u_new[index] = u_old[index_w] - 0.5 * mu * (v_old[index_n] - v_old[index_s]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
 				v_new[index] = v_old[index_w] - 0.5 * (u_old[index_n] - u_old[index_s]);
 
 			}
-			else if (i == 0)
+			//top
+			else if (j == _My - 1 && i > 0 && i < _Mx - 1)
 			{
-				u_new[index] = 1e-18;
-				v_new[index] = 1e-18;
+				u_new[index] = u_old[index_s] - 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_s] - 0.5 * mu * (u_old[index_e] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			//bottom
+			else if (j == 0 && i > 0 && i < _Mx - 1)
+			{
+				u_new[index] = u_old[index_n] + 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_n] + 0.5 * mu * (u_old[index_e] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			//upper left corner
+			//else if (j == _My - 1 && i == 0)
+			//{
+				//u_new[index] = u_old[index_s] - (v_old[index_e] - v_old[index]);
+				//v_new[index] = v_old[index_s] - mu * (u_old[index_e] - u_old[index]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			//}
+			//upper right corner
+			else if (j == _My - 1 && i == _Mx - 1)
+			{
+				u_new[index] = 0.5 * (u_old[index_w] + u_old[index_s] + v_old[index_w] - v_old[index_s]);
+				v_new[index] = 0.5 * (- u_old[index_w] + u_old[index_s] + v_old[index_w] + v_old[index_s]);
+				//u_new[index] = u_old[index_s] - (v_old[index] - v_old[index_w]);
+				//v_new[index] = v_old[index_s] - mu * (u_old[index] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			//lower left corner
+			//else if (j == 0 && i == 0)
+			//{
+				//u_new[index] = u_old[index_n] + v_old[index_e] - v_old[index];
+				//v_new[index] = v_old[index_n] + mu * (u_old[index_e] - u_old[index]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			//}
+			//lower right corner
+			else if (j == 0 && i == _Mx - 1)
+			{
+				u_new[index] = 0.5 * (u_old[index_w] + u_old[index_n] + v_old[index_n] - v_old[index_w]);
+				v_new[index] = 0.5 * (u_old[index_w] - u_old[index_n] + v_old[index_n] + v_old[index_w]);
+				//u_new[index] = u_old[index_n] + v_old[index] - v_old[index_w];
+				//v_new[index] = v_old[index_n] + mu * (u_old[index] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
 			}
 		}
 	}
