@@ -26,6 +26,7 @@ protected:
 	int _Mx, _My;
 	int max_loops, max_frames;
 	double delta_x, delta_t;
+	double L, H, I;
 
 	double T_ini, rho, c_p, lambda, alpha_heat_dimless;
 	double E, mu, alpha;
@@ -47,8 +48,11 @@ public:
 
 	void displacement_evolution();
 	void displacement_boundary();
+	void displacement_boundary_force();
 	void displacement_upadate();
 	void compute_stress();
+
+	double calculate_force(double F, double y);
 
 	void check_variables(int loops, int frame);
 

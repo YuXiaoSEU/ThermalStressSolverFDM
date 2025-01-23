@@ -18,12 +18,13 @@ int main()
 	{
 		loops++;
 
-		mystress.temperature_evolution();
-		mystress.temperature_boundary();
-		mystress.temperature_update();
+		//mystress.temperature_evolution();
+		//mystress.temperature_boundary();
+		//mystress.temperature_update();
 
 		mystress.displacement_evolution();
-		mystress.displacement_boundary();
+		//mystress.displacement_boundary();
+		mystress.displacement_boundary_force();
 		mystress.displacement_upadate();
 
 		if (loops % (max_loops / max_frames) == 0)

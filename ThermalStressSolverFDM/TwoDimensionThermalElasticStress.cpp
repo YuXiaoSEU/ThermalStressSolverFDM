@@ -139,6 +139,9 @@ void TwoDimensionThermalElasticStress::read_parameters()
 	printf("============================ Parameters read end ==============================\n\n");
 
 	malloc_arrays();
+	L = delta_x * _Mx;
+	H = delta_x * _My;
+	I = H * H * H / 12;
 }
 
 void TwoDimensionThermalElasticStress::initialize_domain()
@@ -292,7 +295,6 @@ void TwoDimensionThermalElasticStress::displacement_boundary()
 			{
 				u_new[index] = u_old[index_w] - 0.5 * mu * (v_old[index_n] - v_old[index_s]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
 				v_new[index] = v_old[index_w] - 0.5 * (u_old[index_n] - u_old[index_s]);
-
 			}
 			//top
 			else if (j == _My - 1 && i > 0 && i < _Mx - 1)
@@ -338,6 +340,86 @@ void TwoDimensionThermalElasticStress::displacement_boundary()
 	}
 }
 
+void TwoDimensionThermalElasticStress::displacement_boundary_force()
+{
+	double F = 500.0;
+#pragma omp parallel for
+	for (int i = 0; i < _Mx; i++)
+	{
+		for (int j = 0; j < _My; j++)
+		{
+			int index = _My * i + j;
+			int index_w = _My * (i - 1) + j;
+			int index_e = _My * (i + 1) + j;
+			int index_n = _My * i + j + 1;
+			int index_s = _My * i + j - 1;
+			int index_ne = _My * (i + 1) + j + 1;
+			int index_nw = _My * (i - 1) + j + 1;
+			int index_se = _My * (i + 1) + j - 1;
+			int index_sw = _My * (i - 1) + j - 1;
+
+			//left
+			if (i == 0 && (j == _My / 2 || j == _My / 2 - 1))
+			//if(i == 0)
+			{
+				u_new[index] = 0.0;
+				v_new[index] = 0.0;
+			}
+			else if (i == 0 && j != _My / 2 && j != _My / 2 - 1)
+			{
+				double y = j * delta_x - H / 2;
+				double local_force = calculate_force(F, y);
+				double G = 0.5 * E / (1 + mu);
+
+				u_new[index] = 0.0;
+				v_new[index] = v_old[index_e] - local_force * delta_x / G;
+			}
+			//right
+			else if (i == _Mx - 1 && j > 0 && j < _My - 1)
+			{
+				double y = j * delta_x - H / 2;
+				double local_force = calculate_force(F, y);
+				double G = 0.5 * E / (1 + mu);
+
+				u_new[index] = u_old[index_w] - 0.5 * mu * (v_old[index_n] - v_old[index_s]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+				v_new[index] = v_old[index_w] - 0.5 * (u_old[index_n] - u_old[index_s]) + delta_x * local_force / G;
+			}
+			//top
+			else if (j == _My - 1 && i > 0 && i < _Mx - 1)
+			{
+				u_new[index] = u_old[index_s] - 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_s] - 0.5 * mu * (u_old[index_e] - u_old[index_w]) + alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			//bottom
+			else if (j == 0 && i > 0 && i < _Mx - 1)
+			{
+				u_new[index] = u_old[index_n] + 0.5 * (v_old[index_e] - v_old[index_w]);
+				v_new[index] = v_old[index_n] + 0.5 * mu * (u_old[index_e] - u_old[index_w]) - alpha * (T_old[index] - T_ini) * (1 + mu) * delta_x;
+			}
+			//upper right corner
+			else if (j == _My - 1 && i == _Mx - 1)
+			{
+				double y = H / 2;
+				double local_force = calculate_force(F, y);
+				double G = 0.5 * E / (1 + mu);
+
+				u_new[index] = (u_old[index_w] - mu * u_old[index_s] + mu * (v_old[index_s] - v_old[index_w]) + (alpha * (T_old[index] - T_ini) * (1 + mu) - mu * F / G) * delta_x) / (1 - mu);
+				v_new[index] = (u_old[index_w] - u_old[index_s] + mu * v_old[index_s] - v_old[index_w] + (alpha * (T_old[index] - T_ini) * (1 + mu) - F / G) * delta_x) / (mu - 1);
+			}
+			//lower right corner
+			else if (j == 0 && i == _Mx - 1)
+			{
+				double y = -H / 2;
+				double local_force = calculate_force(F, y);
+				double G = 0.5 * E / (1 + mu);
+
+				u_new[index] = (u_old[index_w] - mu * u_old[index_n] + mu * (v_old[index_w] - v_old[index_n]) + (alpha * (T_old[index] - T_ini) * (1 + mu) + mu * F / G) * delta_x) / (1 - mu);
+				v_new[index] = (u_old[index_w] - u_old[index_n] + v_old[index_w] - mu * v_old[index_n] + (alpha * (T_old[index] - T_ini) * (1 + mu) + F / G) * delta_x) / (1 - mu);
+			}
+		}
+	}
+}
+
 void TwoDimensionThermalElasticStress::displacement_upadate()
 {
 #pragma omp parallel for
@@ -355,6 +437,12 @@ void TwoDimensionThermalElasticStress::displacement_upadate()
 void TwoDimensionThermalElasticStress::compute_stress()
 {
 
+}
+
+double TwoDimensionThermalElasticStress::calculate_force(double F, double y)
+{
+	double force = -(0.5 * F / I) * (H * H / 4 - y * y);
+	return force;
 }
 
 void TwoDimensionThermalElasticStress::check_variables(int loops, int frame)
@@ -377,7 +465,7 @@ void TwoDimensionThermalElasticStress::create_workspace_directory()
 			std::cerr << "Error: Unable to create workspace directory." << std::endl;
 			exit(EXIT_FAILURE);
 		}
-		printf("************** Worspace directory created in the root directory ***************\n");;
+		printf("************** Workspace directory created in the root directory **************\n");;
 	}
 }
 
