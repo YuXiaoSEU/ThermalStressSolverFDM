@@ -1,11 +1,11 @@
 ﻿Part 1: Mesh parameters, delta x, delta t 
-400                                           !line 01: _Mx
-125                                           !line 02: _My
-0.001                                         !line 03: Lx
+400                                          !line 01: _Mx
+100                                           !line 02: _My
+0.0005                                        !line 03: Lx
 0.000001                                      !line 04: dt
 Part2: The maximum running loops and frames
-50000000                                      !line 01: max_loops
-50                                            !line 02: max_frames
+500000000                                     !line 01: max_loops
+200                                           !line 02: max_frames
 Part3: Temperature field settings
 273                                           !line 01: T_ini
 2700                                          !line 02: rho
@@ -13,5 +13,5 @@ Part3: Temperature field settings
 238                                           !line 04: lambda
 Part4: Solid field settings
 7e+10                                         !line 01: E
-0.4                                           !line 02: mu
+0.33                                          !line 02: mu
 2.3e-6                                        !line 03: alpha
