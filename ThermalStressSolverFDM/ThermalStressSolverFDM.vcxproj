@@ -123,6 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\Headers;..\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,11 +133,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Sources\TwoDimensionThermalElasticStress.cpp" />
     <ClCompile Include="ThermalStressSolverFDM.cpp" />
-    <ClCompile Include="TwoDimensionThermalElasticStress.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TwoDimensionThermalElasticStress.h" />
+    <ClInclude Include="..\Headers\TwoDimensionThermalElasticStress.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

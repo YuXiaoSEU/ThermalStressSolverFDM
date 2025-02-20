@@ -18,12 +18,12 @@
     <ClCompile Include="ThermalStressSolverFDM.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TwoDimensionThermalElasticStress.cpp">
+    <ClCompile Include="..\Sources\TwoDimensionThermalElasticStress.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TwoDimensionThermalElasticStress.h">
+    <ClInclude Include="..\Headers\TwoDimensionThermalElasticStress.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
